@@ -95,6 +95,22 @@ async function apiRequest(endpoint, options = {}) {
   }
 }
 
+// Ejemplo de uso para el login
+async function login(usuario, contraseña) {
+  try {
+    const data = await apiRequest('/usuarios/login', {
+      method: 'POST',
+      body: JSON.stringify({ usuario, contraseña })
+    });
+    console.log('Login exitoso:', data);
+    // acá podés guardar el token o redirigir al dashboard
+  } catch (error) {
+    console.error('Error en login:', error);
+    alert('Credenciales inválidas o error de conexión');
+  }
+}
+
+
 // Formatear fecha
 function formatDate(dateString) {
   if (!dateString) return '-';
