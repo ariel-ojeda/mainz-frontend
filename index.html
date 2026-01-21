@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Mainz Medical Spa</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Contenedor principal -->
+  <div id="app">
+    
+    <!-- ========================================= -->
+    <!-- PANTALLA DE LOGIN -->
+    <!-- ========================================= -->
+    <section id="loginSection" class="login-container">
+      <div class="login-card">
+        <h1>🏥 Mainz Medical Spa</h1>
+        <h2>Sistema de Gestión de Cotizaciones</h2>
+        
+        <form id="loginForm" class="form">
+          <div class="form-group">
+            <label for="usuario">Usuario</label>
+            <input type="text" id="usuario" placeholder="Ingrese su usuario" required autocomplete="username" />
+          </div>
+          
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" placeholder="Ingrese su contraseña" required autocomplete="current-password" />
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+          
+          <div id="loginError" class="error-message" style="display:none;"></div>
+        </form>
+        
+        <div class="login-info">
+          <p><strong>Usuarios de prueba:</strong></p>
+          <p>admin / password123</p>
+          <p>vendedor1 / password123</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- APLICACIÓN PRINCIPAL (después del login) -->
+    <!-- ========================================= -->
+    <div id="mainApp" style="display:none;">
+      
+      <!-- Header con navegación -->
+      <header class="header">
+        <div class="header-content">
+          <h1>🏥 Mainz Medical Spa</h1>
+          <div class="user-info">
+            <span id="userDisplay"></span>
+            <button id="logoutBtn" class="btn btn-secondary btn-sm">Cerrar Sesión</button>
+          </div>
+        </div>
+        
+        <!-- Navegación por tabs -->
+        <nav class="nav-tabs">
+          <button class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
+          <button class="tab-btn" data-tab="clientes">👥 Clientes</button>
+          <button class="tab-btn" data-tab="productos">📦 Productos</button>
+          <button class="tab-btn" data-tab="categorias">🏷️ Categorías</button>
+          <button class="tab-btn" data-tab="cotizaciones">📋 Cotizaciones</button>
+          <button class="tab-btn" data-tab="despachos">🚚 Despachos</button>
+          <button class="tab-btn admin-only" data-tab="usuarios" style="display:none;">👤 Usuarios</button>
+          <button class="tab-btn admin-only" data-tab="reportes" style="display:none;">📈 Reportes</button>
+        </nav>
+      </header>
+
+      <!-- Contenedor de contenido -->
+      <main class="main-content">
+        
+        <!-- ========================================= -->
+        <!-- TAB: DASHBOARD -->
+        <!-- ========================================= -->
+        <section id="tab-dashboard" class="tab-content active">
+          <h2>Dashboard General</h2>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <h3>Clientes</h3>
+              <p class="stat-number" id="stat-clientes">-</p>
+            </div>
+            <div class="stat-card">
+              <h3>Productos Activos</h3>
+              <p class="stat-number" id="stat-productos">-</p>
+            </div>
+            <div class="stat-card">
+              <h3>Cotizaciones</h3>
+              <p class="stat-number" id="stat-cotizaciones">-</p>
+            </div>
+            <div class="stat-card">
+              <h3>Despachos Pendientes</h3>
+              <p class="stat-number" id="stat-despachos">-</p>
+            </div>
+          </div>
+
+          <div class="dashboard-section">
+            <h3>Últimas Cotizaciones</h3>
+            <div id="ultimasCotizaciones" class="table-container">
+              <p class="loading">Cargando...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- TAB: CLIENTES -->
+        <!-- ========================================= -->
+        <section id="tab-clientes" class="tab-content">
+          <div class="section-header">
+            <h2>Gestión de Clientes</h2>
+            <button id="btnNuevoCliente" class="btn btn-primary admin-only" style="display:none;">+ Nuevo Cliente</button>
+          </div>
+
+          <!-- Filtros -->
+          <div class="filters">
+            <input type="text" id="filtroClienteNombre" placeholder="Buscar por nombre..." class="input-filter">
+            <input type="text" id="filtroClienteRut" placeholder="Buscar por RUT..." class="input-filter">
+            <button id="btnFiltrarClientes" class="btn btn-secondary">Buscar</button>
+            <button id="btnLimpiarFiltrosClientes" class="btn btn-secondary">Limpiar</button>
+          </div>
+
+          <!-- Lista de clientes -->
+          <div id="clientesList" class="table-container">
+            <p class="loading">Cargando clientes...</p>
+          </div>
+
+          <!-- Paginación -->
+          <div id="paginacionClientes" class="pagination"></div>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- TAB: PRODUCTOS -->
+        <!-- ========================================= -->
+        <section id="tab-productos" class="tab-content">
+          <div class="section-header">
+            <h2>Gestión de Productos</h2>
+            <button id="btnNuevoProducto" class="btn btn-primary admin-only" style="display:none;">+ Nuevo Producto</button>
+          </div>
+
+          <!-- Filtros -->
+          <div class="filters">
+            <input type="text" id="filtroProductoNombre" placeholder="Buscar por nombre..." class="input-filter">
+            <input type="text" id="filtroProductoCodigo" placeholder="Buscar por código..." class="input-filter">
+            <select id="filtroProductoCategoria" class="input-filter">
+              <option value="">Todas las categorías</option>
+            </select>
+            <button id="btnFiltrarProductos" class="btn btn-secondary">Buscar</button>
+            <button id="btnLimpiarFiltrosProductos" class="btn btn-secondary">Limpiar</button>
+          </div>
+
+          <!-- Lista de productos -->
+          <div id="productosList" class="table-container">
+            <p class="loading">Cargando productos...</p>
+          </div>
+
+          <!-- Paginación -->
+          <div id="paginacionProductos" class="pagination"></div>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- TAB: CATEGORÍAS -->
+        <!-- ========================================= -->
+        <section id="tab-categorias" class="tab-content">
+          <div class="section-header">
+            <h2>Gestión de Categorías</h2>
+            <button id="btnNuevaCategoria" class="btn btn-primary admin-only" style="display:none;">+ Nueva Categoría</button>
+          </div>
+
+          <!-- Lista de categorías -->
+          <div id="categoriasList" class="table-container">
+            <p class="loading">Cargando categorías...</p>
+          </div>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- TAB: COTIZACIONES -->
+        <!-- ========================================= -->
+        <section id="tab-cotizaciones" class="tab-content">
+          <div class="section-header">
+            <h2>Gestión de Cotizaciones</h2>
+            <button id="btnNuevaCotizacion" class="btn btn-primary">+ Nueva Cotización</button>
+          </div>
+
+          <!-- Filtros -->
+          <div class="filters">
+            <select id="filtroCotizacionEstado" class="input-filter">
+              <option value="">Todos los estados</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="aprobada">Aprobada</option>
+              <option value="rechazada">Rechazada</option>
+              <option value="enviada">Enviada</option>
+            </select>
+            <input type="date" id="filtroCotizacionDesde" class="input-filter">
+            <input type="date" id="filtroCotizacionHasta" class="input-filter">
+            <button id="btnFiltrarCotizaciones" class="btn btn-secondary">Buscar</button>
+            <button id="btnLimpiarFiltrosCotizaciones" class="btn btn-secondary">Limpiar</button>
+          </div>
+
+          <!-- Lista de cotizaciones -->
+          <div id="cotizacionesList" class="table-container">
+            <p class="loading">Cargando cotizaciones...</p>
+          </div>
+
+          <!-- Paginación -->
+          <div id="paginacionCotizaciones" class="pagination"></div>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- TAB: DESPACHOS -->
+        <!-- ========================================= -->
+        <section id="tab-despachos" class="tab-content">
+          <div class="section-header">
+            <h2>Gestión de Despachos</h2>
+            <button id="btnNuevoDespacho" class="btn btn-primary admin-only" style="display:none;">+ Nuevo Despacho</button>
+          </div>
+
+          <!-- Filtros -->
+          <div class="filters">
+            <select id="filtroDespachoEstado" class="input-filter">
+              <option value="">Todos los estados</option>
+              <option value="preparando">Preparando</option>
+              <option value="enviado">Enviado</option>
+              <option value="en_transito">En Tránsito</option>
+              <option value="entregado">Entregado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+            <button id="btnFiltrarDespachos" class="btn btn-secondary">Buscar</button>
+            <button id="btnLimpiarFiltrosDespachos" class="btn btn-secondary">Limpiar</button>
+          </div>
+
+          <!-- Lista de despachos -->
+          <div id="despachosList" class="table-container">
+            <p class="loading">Cargando despachos...</p>
+          </div>
+
+          <!-- Paginación -->
+          <div id="paginacionDespachos" class="pagination"></div>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- TAB: USUARIOS (solo admin) -->
+        <!-- ========================================= -->
+        <section id="tab-usuarios" class="tab-content">
+          <div class="section-header">
+            <h2>Gestión de Usuarios</h2>
+            <button id="btnNuevoUsuario" class="btn btn-primary">+ Nuevo Usuario</button>
+          </div>
+
+          <!-- Lista de usuarios -->
+          <div id="usuariosList" class="table-container">
+            <p class="loading">Cargando usuarios...</p>
+          </div>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- TAB: REPORTES (solo admin) -->
+        <!-- ========================================= -->
+        <section id="tab-reportes" class="tab-content">
+          <h2>Reportes y Estadísticas</h2>
+          
+          <div class="reports-grid">
+            <button class="report-card" data-report="ventas">
+              <h3>📊 Ventas por Período</h3>
+              <p>Ver reporte de ventas mensual</p>
+            </button>
+            
+            <button class="report-card" data-report="productos-top">
+              <h3>🏆 Productos Más Vendidos</h3>
+              <p>Top 10 productos</p>
+            </button>
+            
+            <button class="report-card" data-report="clientes-top">
+              <h3>⭐ Clientes Top</h3>
+              <p>Clientes con más compras</p>
+            </button>
+            
+            <button class="report-card" data-report="estados">
+              <h3>📈 Cotizaciones por Estado</h3>
+              <p>Distribución de estados</p>
+            </button>
+          </div>
+
+          <div id="reporteResultado" class="report-result" style="display:none;">
+            <h3 id="reporteTitulo"></h3>
+            <div id="reporteContenido"></div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- MODAL GENÉRICO -->
+    <!-- ========================================= -->
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitulo"></h3>
+          <button class="modal-close" id="modalClose">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- NOTIFICACIONES -->
+    <!-- ========================================= -->
+    <div id="notifications" class="notifications"></div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
