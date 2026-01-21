@@ -2,7 +2,7 @@
 // SISTEMA MAINZ MEDICAL SPA - FRONTEND
 // =====================================================
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://mainz-backend.carefree-vibrancy.up.railway.app';
 let currentUser = null;
 let currentPage = {
   clientes: 1,
