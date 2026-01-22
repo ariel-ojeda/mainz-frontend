@@ -237,40 +237,43 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // =====================================================
 // LOGIN Y AUTENTICACIÓN
 // =====================================================
-
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  
+
   const usuario = document.getElementById('usuario').value;
   const password = document.getElementById('password').value;
   const errorDiv = document.getElementById('loginError');
-  
+
   try {
     const data = await apiRequest('/usuarios/login', {
       method: 'POST',
-      body: JSON.stringify({ usuario, password })
+      body: JSON.stringify({ usuario, password }),
     });
-    
+
     setToken(data.token);
     currentUser = decodeToken(data.token);
-    
+
     // Ocultar login y mostrar app
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
-    
+
     // Configurar UI según rol
     setupUserInterface();
-    
+
     // Cargar dashboard
     switchTab('dashboard');
-    
-    showNotification('Bienvenido', `Has iniciado sesión como ${currentUser.usuario}`, 'success');
-    
+
+    showNotification(
+      'Bienvenido',
+      `Has iniciado sesión como ${currentUser.usuario}`,
+      'success'
+    );
   } catch (error) {
     errorDiv.textContent = error.message;
     errorDiv.style.display = 'block';
   }
 });
+
 
 // Logout
 document.getElementById('logoutBtn').addEventListener('click', () => {
