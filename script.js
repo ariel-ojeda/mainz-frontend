@@ -2,7 +2,7 @@
 // SISTEMA MAINZ MEDICAL SPA - FRONTEND
 // =====================================================
 
-const API_URL = 'mainz-backend-production.up.railway.app';
+const API_URL = 'https://mainz-backend-production.up.railway.app';
 let currentUser = null;
 let currentPage = {
   clientes: 1,
