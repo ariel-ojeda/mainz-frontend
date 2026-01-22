@@ -64,34 +64,41 @@ function getCurrentUser() {
   return decodeToken(token);
 }
 
-// Hacer petición a la API
 async function apiRequest(endpoint, options = {}) {
   const token = getToken();
   const headers = {
     'Content-Type': 'application/json',
     ...options.headers
   };
-  
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
-  
+
   try {
     const response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
       headers
     });
-    
+
+    const contentType = response.headers.get('content-type');
+
+    // Validar que la respuesta sea JSON
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      throw new Error('Respuesta no válida del servidor: ' + text);
+    }
+
     const data = await response.json();
-    
+
     if (!response.ok) {
       throw new Error(data.mensaje || 'Error en la petición');
     }
-    
+
     return data;
   } catch (error) {
     console.error('API Error:', error);
-    throw error;
+    throw new Error('Error al conectar con el servidor: ' + error.message);
   }
 }
 
@@ -237,43 +244,40 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // =====================================================
 // LOGIN Y AUTENTICACIÓN
 // =====================================================
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-
+  
   const usuario = document.getElementById('usuario').value;
   const password = document.getElementById('password').value;
   const errorDiv = document.getElementById('loginError');
-
+  
   try {
     const data = await apiRequest('/usuarios/login', {
       method: 'POST',
-      body: JSON.stringify({ usuario, password }),
+      body: JSON.stringify({ usuario, password })
     });
-
+    
     setToken(data.token);
     currentUser = decodeToken(data.token);
-
+    
     // Ocultar login y mostrar app
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
-
+    
     // Configurar UI según rol
     setupUserInterface();
-
+    
     // Cargar dashboard
     switchTab('dashboard');
-
-    showNotification(
-      'Bienvenido',
-      `Has iniciado sesión como ${currentUser.usuario}`,
-      'success'
-    );
+    
+    showNotification('Bienvenido', `Has iniciado sesión como ${currentUser.usuario}`, 'success');
+    
   } catch (error) {
     errorDiv.textContent = error.message;
     errorDiv.style.display = 'block';
   }
 });
-
 
 // Logout
 document.getElementById('logoutBtn').addEventListener('click', () => {
